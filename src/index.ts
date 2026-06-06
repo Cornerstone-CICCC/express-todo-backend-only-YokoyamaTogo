@@ -13,11 +13,75 @@ const todos: Todo[] = [
   { id: 1, title: "Buy groceries", completed: false }
 ]
 
+let nextId = todos.length + 1
+
 app.use(express.json())
 
 app.use((req: Request, _res: Response, next) => {
   console.log(`${req.method} ${req.url}`)
   next()
+})
+
+app.get("/todos", (_req: Request, res: Response) => {
+  res.json(todos)
+})
+
+app.get("/todos/:id", (req: Request, res: Response) => {
+  const id = Number(req.params.id)
+  const todo = todos.find((todo) => todo.id === id)
+
+  if (!todo) {
+    res.status(404).json({ message: "Todo not found" })
+    return
+  }
+
+  res.json(todo)
+})
+
+app.post("/todos", (req: Request, res: Response) => {
+  const { title, completed } = req.body
+
+  const newTodo: Todo = {
+    id: nextId,
+    title,
+    completed,
+  }
+
+  todos.push(newTodo)
+  nextId += 1
+
+  res.status(201).json(newTodo)
+})
+
+app.put("/todos/:id", (req: Request, res: Response) => {
+  const id = Number(req.params.id)
+  const todo = todos.find((todo) => todo.id === id)
+
+  if (!todo) {
+    res.status(404).json({ message: "Todo not found" })
+    return
+  }
+
+  const { title, completed } = req.body
+
+  todo.title = title
+  todo.completed = completed
+
+  res.json(todo)
+})
+
+app.delete("/todos/:id", (req: Request, res: Response) => {
+  const id = Number(req.params.id)
+  const todoIndex = todos.findIndex((todo) => todo.id === id)
+
+  if (todoIndex === -1) {
+    res.status(404).json({ message: "Todo not found" })
+    return
+  }
+
+  const deletedTodos = todos.splice(todoIndex, 1)
+
+  res.json(deletedTodos[0])
 })
 
 app.listen(port, () => {
