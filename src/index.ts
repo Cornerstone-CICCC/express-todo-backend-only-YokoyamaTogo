@@ -6,6 +6,16 @@ type Todo = {
   completed: boolean
 }
 
+type TodoRequestBody = {
+  title?: unknown
+  completed?: unknown
+}
+
+type ValidTodoRequestBody = {
+  title: string
+  completed: boolean
+}
+
 const app = express()
 const port = 3000
 
@@ -22,8 +32,14 @@ app.use((req: Request, _res: Response, next) => {
   next()
 })
 
+const isValidTodoRequestBody = (
+  body: TodoRequestBody
+): body is ValidTodoRequestBody => {
+  return typeof body.title === "string" && typeof body.completed === "boolean"
+}
+
 app.get("/todos", (_req: Request, res: Response) => {
-  res.json(todos)
+  res.status(200).json(todos)
 })
 
 app.get("/todos/:id", (req: Request, res: Response) => {
@@ -35,16 +51,21 @@ app.get("/todos/:id", (req: Request, res: Response) => {
     return
   }
 
-  res.json(todo)
+  res.status(200).json(todo)
 })
 
 app.post("/todos", (req: Request, res: Response) => {
-  const { title, completed } = req.body
+  const body = req.body as TodoRequestBody
+
+  if (!isValidTodoRequestBody(body)) {
+    res.status(400).json({ message: "title and completed are required" })
+    return
+  }
 
   const newTodo: Todo = {
     id: nextId,
-    title,
-    completed,
+    title: body.title,
+    completed: body.completed,
   }
 
   todos.push(newTodo)
@@ -62,12 +83,17 @@ app.put("/todos/:id", (req: Request, res: Response) => {
     return
   }
 
-  const { title, completed } = req.body
+  const body = req.body as TodoRequestBody
 
-  todo.title = title
-  todo.completed = completed
+  if (!isValidTodoRequestBody(body)) {
+    res.status(400).json({ message: "title and completed are required" })
+    return
+  }
 
-  res.json(todo)
+  todo.title = body.title
+  todo.completed = body.completed
+
+  res.status(200).json(todo)
 })
 
 app.delete("/todos/:id", (req: Request, res: Response) => {
@@ -81,7 +107,11 @@ app.delete("/todos/:id", (req: Request, res: Response) => {
 
   const deletedTodos = todos.splice(todoIndex, 1)
 
-  res.json(deletedTodos[0])
+  res.status(200).json(deletedTodos[0])
+})
+
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ message: "Route not found" })
 })
 
 app.listen(port, () => {
