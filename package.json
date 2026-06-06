@@ -1,0 +1,31 @@
+{
+  "name": "express",
+  "version": "1.0.0",
+  "description": "This project focuses on building your first Express server with CRUD endpoints to manage a simple todo list. All todos should be stored in server memory (no database yet).",
+  "homepage": "https://github.com/Cornerstone-CICCC/express-todo-backend-only-YokoyamaTogo#readme",
+  "bugs": {
+    "url": "https://github.com/Cornerstone-CICCC/express-todo-backend-only-YokoyamaTogo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cornerstone-CICCC/express-todo-backend-only-YokoyamaTogo.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
